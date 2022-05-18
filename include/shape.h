@@ -20,7 +20,8 @@ class Shape {
    * @brief Compute gravity and viscous force.
    *
    */
-  void computeExternalForce();
+  void computeExternalForce(double delta);
+  void integrate_PBF(double delta);
   virtual void collide(Shape* shape) = 0;
   virtual void collide(Cloth*) { return; }
   virtual void collide(Spheres*) { return; }

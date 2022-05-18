@@ -13,6 +13,7 @@
 #undef GLAD_GL_IMPLEMENTATION
 
 #include "hw1.h"
+
 int alignSize = 256;
 bool isWindowSizeChanged = true;
 bool mouseBinded = false;
@@ -105,14 +106,35 @@ int main() {
   UniformBuffer meshUBO;
   int meshOffset = uboAlign(32 * sizeof(GLfloat));
   meshUBO.allocate(2 * meshOffset);
+  /* comment by a
   meshUBO.load(0, 16 * sizeof(GLfloat), cloth.getModelMatrix().data());
   meshUBO.load(16 * sizeof(GLfloat), 16 * sizeof(GLfloat), cloth.getNormalMatrix().data());
+  */
 
   Spheres& spheres = Spheres::initSpheres();
+  /* comment by myself
   spheres.addSphere(Eigen::Vector4f(-0.75, 1, -0.75, 1), 0.5f);
   spheres.addSphere(Eigen::Vector4f(0.75, 1, -0.75, 1), 0.5f);
   spheres.addSphere(Eigen::Vector4f(-0.75, 1, 0.75, 1), 0.5f);
   spheres.addSphere(Eigen::Vector4f(0.75, 1, 0.75, 1), 0.5f);
+  */
+  // add by myself
+  /* 改這樣之後會變很卡，應該是shader太多粒子的關係? 目前應該還好? */
+
+  int initialLength = 11, initialHeight = 8, initialWidth = 11,
+      sphereNumber = initialWidth * initialLength * initialHeight;
+  double lengthSpace = 0.06, heightSpace = 0.06, widthSpace = 0.06, sphereSize = 0.03;
+  double initialX = ((double)initialLength * -lengthSpace) / 2,
+         initialY = 1 + ((double)initialHeight * -heightSpace) / 2, initialZ = ((double)initialWidth * -widthSpace) / 2;
+
+  for (int i = 0; i < initialLength; ++i)
+    for (int j = 0; j < initialHeight; ++j)
+      for (int k = 0; k < initialWidth; ++k)
+        spheres.addSphere(Eigen::Vector4f(initialX + lengthSpace * (double)i, initialY + heightSpace * (double)j,
+                                          initialZ + widthSpace * (double)k, 1),
+                          sphereSize);
+  // end of add
+
   meshUBO.load(meshOffset, 16 * sizeof(GLfloat), spheres.getModelMatrix().data());
   meshUBO.load(meshOffset + 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), spheres.getNormalMatrix().data());
 
@@ -124,11 +146,13 @@ int main() {
   cameraUBO.bindUniformBlockIndex(1, 0, uboAlign(20 * sizeof(GLfloat)));
   // Do one step simulation, used in some implicit methods
   std::function<void(void)> simulateOneStep = [&]() {
+    /* comment by a
     cloth.computeExternalForce();
-    spheres.computeExternalForce();
     cloth.computeSpringForce();
     spheres.collide(&cloth);
     spheres.collide();
+    */
+    spheres.integrate_PBF(DELTA_T);
   };
 
   ExplicitEuler explicitEuler;
