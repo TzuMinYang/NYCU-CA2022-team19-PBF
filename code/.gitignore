@@ -1,0 +1,11 @@
+*.o
+cs467
+*/Debug/
+Debug
+Release
+*.sdf
+*.opendb
+.vs
+Makefile
+out
+

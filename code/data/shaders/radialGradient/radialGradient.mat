@@ -1,0 +1,8 @@
+defineMaterial
+	name radialGradient
+	shader radialGradientShader
+	texture textureSampler ../data/textures/ground_TileLight2.bmp
+
+	float minValue 8.0
+	float maxValue 25.0
+/material

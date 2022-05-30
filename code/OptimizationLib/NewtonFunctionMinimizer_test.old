@@ -1,0 +1,57 @@
+
+#include <gtest/gtest.h>
+#include "NewtonFunctionMinimizer.h"
+
+#include <MathLib/Matrix.h>
+
+namespace sooqp {
+
+/*!
+ * f(x,y)=x^2+y^2
+ */
+class ObjectiveFunctionExample1 : public ObjectiveFunction {
+ public:
+  ObjectiveFunctionExample1():ObjectiveFunction(),gradient(2),hessian(2,2) {
+    hessian.insert(0,0) = 2;
+    hessian.insert(1,1) = 2;
+  }
+  virtual ~ObjectiveFunctionExample1() {}
+  virtual double computeValue(const Eigen::VectorXd& p) {
+    return p(0)*p(0)+p(1)*p(1);
+  }
+  virtual const SparseMatrix& getHessianAt(const Eigen::VectorXd& p) {
+    return hessian;
+  }
+  virtual const Eigen::VectorXd& getGradientAt(const Eigen::VectorXd& p) {
+    gradient(0) = 2*p(0);
+    gradient(1) = 2*p(1);
+    return gradient;
+  }
+ protected:
+   SparseMatrix hessian;
+   Eigen::VectorXd gradient;
+};
+
+
+} // namespace ooqp
+
+TEST(NewtonFunctionMinimizerTest, example1)
+{
+  using namespace sooqp;
+  NewtonFunctionMinimizer solver;
+  ObjectiveFunctionExample1 objective;
+  Eigen::VectorXd p(2);
+  p(0) = 10;
+  p(1) = 20;
+  double functionValue = 0;
+
+  // solve
+  ASSERT_TRUE(solver.minimize(&objective, p, functionValue));
+
+  EXPECT_NEAR(0.0, p(0), 1e-3);
+  EXPECT_NEAR(0.0, p(1), 1e-3);
+  EXPECT_NEAR(0.0, functionValue, 1e-3);
+
+//  std::cout << "Solution: (" << p(0) << ", " << p(1) << ")" << std::endl;
+//  std::cout << "Function value: " << functionValue << std::endl;
+}

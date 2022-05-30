@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FreeType.cpp" />
+    <ClCompile Include="GLApplication.cpp" />
+    <ClCompile Include="GLCamera.cpp" />
+    <ClCompile Include="GLConsole.cpp" />
+    <ClCompile Include="GLContentManager.cpp" />
+    <ClCompile Include="GLMesh.cpp" />
+    <ClCompile Include="GlobalMouseState.cpp" />
+    <ClCompile Include="GLShader.cpp" />
+    <ClCompile Include="GLShaderMaterial.cpp" />
+    <ClCompile Include="GLTexture.cpp" />
+    <ClCompile Include="GLTrackingCamera.cpp" />
+    <ClCompile Include="GLUtils.cpp" />
+    <ClCompile Include="GLWindow.cpp" />
+    <ClCompile Include="GLWindow2D.cpp" />
+    <ClCompile Include="GLWindow3D.cpp" />
+    <ClCompile Include="GLWindowContainer.cpp" />
+    <ClCompile Include="InteractiveWidget.cpp" />
+    <ClCompile Include="OBJReader.cpp" />
+    <ClCompile Include="RotateWidget.cpp" />
+    <ClCompile Include="RotateWidgetV1.cpp" />
+    <ClCompile Include="RotateWidgetV2.cpp" />
+    <ClCompile Include="TransformWidget.cpp" />
+    <ClCompile Include="TranslateWidget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FreeType.h" />
+    <ClInclude Include="GLApplication.h" />
+    <ClInclude Include="GLCamera.h" />
+    <ClInclude Include="GLConsole.h" />
+    <ClInclude Include="GLContentManager.h" />
+    <ClInclude Include="GLMesh.h" />
+    <ClInclude Include="GlobalMouseState.h" />
+    <ClInclude Include="GLShader.h" />
+    <ClInclude Include="GLShaderMaterial.h" />
+    <ClInclude Include="GLTexture.h" />
+    <ClInclude Include="GLTrackingCamera.h" />
+    <ClInclude Include="GLUtils.h" />
+    <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="GLWindow2D.h" />
+    <ClInclude Include="GLWindow3D.h" />
+    <ClInclude Include="GLWindowContainer.h" />
+    <ClInclude Include="InteractiveWidget.h" />
+    <ClInclude Include="OBJReader.h" />
+    <ClInclude Include="RotateWidget.h" />
+    <ClInclude Include="RotateWidgetV1.h" />
+    <ClInclude Include="RotateWidgetV2.h" />
+    <ClInclude Include="TransformWidget.h" />
+    <ClInclude Include="TranslateWidget.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8159886F-88A6-442A-9822-3AAE0A17AB7C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GUILib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../include;../;../include/ft2.5.5</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../include;../;../include/ft2.5.5;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
