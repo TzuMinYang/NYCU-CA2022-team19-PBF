@@ -36,4 +36,5 @@ public:
 	IntTriple indexOfPosition(Particle p);
 	void add(int i, Particle p);
 	void findNeighbors(Particle &p, std::vector<Particle> &particles);
+	void brute_force_findNeighbors(Particle &p, int index, std::vector<Particle> &particles); // add by s
 };

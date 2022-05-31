@@ -1,4 +1,5 @@
 #include "CollisionPlane.h"
+#include "Constants.h" // add by s
 
 CollisionPlane::CollisionPlane(P3D p, V3D n) {
 	pointOnPlane = p;
@@ -11,5 +12,11 @@ CollisionPlane::CollisionPlane(P3D p, V3D n) {
 P3D CollisionPlane::handleCollision(P3D point)
 {
 	// TODO: implement collision handling with planes.
+	// add by s
+	float distance = (this->pointOnPlane - point).dot(this->normal);
+	if (distance < KERNEL_H)
+		point -= this->normal * distance; // not sure: 要不要加回KERNEL_H?
+
 	return point;
+	// end of add
 }

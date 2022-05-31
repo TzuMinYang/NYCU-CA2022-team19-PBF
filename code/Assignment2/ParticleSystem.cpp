@@ -124,7 +124,6 @@ void ParticleSystem::integrate_PBF(double delta) {
 	for (auto &p : particles) {
 		// TODO: edit this loop to apply vorticity and viscosity.
 		p.v_i = (p.x_star - p.x_i) / delta;
-
 		p.x_i = p.x_star;
 	}
 }

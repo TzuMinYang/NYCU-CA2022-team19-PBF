@@ -63,3 +63,13 @@ void SpatialMap::findNeighbors(Particle &p_i, vector<Particle> &particles) {
 		}
 	}
 }
+
+void brute_force_findNeighbors(Particle &p_i, int index, std::vector<Particle> &particles) // add by s
+{
+	p_i.neighbors.clear();
+	for (int j = 0; j < particles.size(); ++j)
+	{
+		if (j != index && closeEnough(p_i, particles[j])) // not sure:自己不知道算不算neighbor?
+			p_i.neighbors.push_back(j);
+	}
+}
