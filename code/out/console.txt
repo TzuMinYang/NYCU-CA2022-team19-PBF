@@ -1,0 +1,1 @@
+Created particle system with 300 particles
