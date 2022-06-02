@@ -120,6 +120,20 @@ void ParticleSystem::integrate_PBF(double delta) {
 	}
 
 	// TODO: implement the solver loop.
+	int iteration = 0;
+	while (iteration < SOLVER_ITERATIONS) {
+		// calculate delta position
+		for (auto& p : particles) {
+			// collision detection
+			for (auto& cp : planes)
+			{
+
+				p.x_star = cp.handleCollision(p.x_star);
+			}
+				
+		}
+		iteration++;
+	}
 
 	for (auto &p : particles) {
 		// TODO: edit this loop to apply vorticity and viscosity.
