@@ -95,7 +95,7 @@ const V3D GRAVITY = V3D(0, -9.8, 0);
 void ParticleSystem::applyForces(double delta) {
 	if (enableGravity) {
 		// Assume all particles have unit mass to simplify calculations.
-		for (auto &p : particles) {
+		for (auto& p : particles) {
 			p.v_i += (GRAVITY * delta);
 		}
 	}
@@ -105,7 +105,7 @@ void ParticleSystem::applyForces(double delta) {
 void ParticleSystem::integrate_PBF(double delta) {
 	applyForces(delta);
 	// Predict positions for this timestep.
-	for (auto &p : particles) {
+	for (auto& p : particles) {
 		p.x_star = p.x_i + (p.v_i * delta);
 	}
 
@@ -115,32 +115,116 @@ void ParticleSystem::integrate_PBF(double delta) {
 		particleMap.add(i, particles[i]);
 	}
 
-	for (auto &p_i : particles) {
+	for (auto& p_i : particles) {
 		particleMap.findNeighbors(p_i, particles);
 	}
 
 	// TODO: implement the solver loop.
+
 	int iteration = 0;
 	while (iteration < SOLVER_ITERATIONS) {
+
+		// calculate lambda
+		for (int i = 0; i < particles.size(); i++) {
+			particles[i].density = computeDensity(i);
+			particles[i].lambda_i = computeLambda(i);
+		}
 		// calculate delta position
 		for (auto& p : particles) {
+			p.delta_p = computeDeltaP(p);
 			// collision detection
 			for (auto& cp : planes)
-			{
-
 				p.x_star = cp.handleCollision(p.x_star);
-			}
-				
+		}
+
+		// update position
+		for (auto& p : particles) {
+			p.x_star += p.delta_p;
 		}
 		iteration++;
 	}
 
-	for (auto &p : particles) {
+	for (auto& p : particles) {
 		// TODO: edit this loop to apply vorticity and viscosity.
 		p.v_i = (p.x_star - p.x_i) / delta;
+
+		// apply viscosity
+		p.v_i += computeViscosity(p);
 		p.x_i = p.x_star;
 	}
 }
+
+// functions added by a
+double ParticleSystem::computeDensity(int i) {
+	double density = 0.0;
+	// neighbor or all?
+	for (auto& j : particles[i].neighbors) {
+		// mass = 1 -> ignore mass
+		density += poly6WKernel(particles[i].x_star - particles[j].x_star, KERNEL_H);
+	}
+	return density;
+}
+
+double ParticleSystem::poly6WKernel(V3D r, double h) {
+
+	if (r.length() > h) {
+		return 0.0;
+	}
+	return 315.0 / (64.0 * PI * pow(h, 9)) * pow(pow(h, 2) - r.length2(), 3);
+}
+
+V3D ParticleSystem::spikyWKernel(V3D r, double h) {
+	if (r.length() > h) {
+		return V3D();
+	}
+
+	return -45.0 / (PI * pow(h, 6)) * pow(h - r.length(), 2) * r / r.length();
+}
+
+double  ParticleSystem::computeLambda(int i) {
+	double constraint = (particles[i].density / REST_DENSITY) - 1.0;
+	double constraintGradientSum = 0.0;
+	for (auto& k : particles[i].neighbors) {
+		// calculate constraint gradient
+		V3D constraintGradient = V3D();
+		if (k == i) {
+			for (auto& j : particles[i].neighbors) {
+				constraintGradient += spikyWKernel(particles[i].x_star - particles[j].x_star, KERNEL_H);
+			}
+		}
+		else {
+			constraintGradient = -spikyWKernel(particles[i].x_star - particles[k].x_star, KERNEL_H);
+		}
+		constraintGradient /= REST_DENSITY;
+		constraintGradientSum += constraintGradient.length2();
+	}
+
+	return -constraint / (constraintGradientSum + CFM_EPSILON);
+}
+
+V3D ParticleSystem::computeDeltaP(Particle i) {
+	V3D deltaP = V3D();
+	for (auto& j : i.neighbors) {
+		deltaP += (spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H) * (i.lambda_i + particles[j].lambda_i + computeSurfaceTension(i, particles[j])));
+	}
+	deltaP /= REST_DENSITY;
+	return deltaP;
+}
+
+double ParticleSystem::computeSurfaceTension(Particle i, Particle j) {
+
+	return -TENSILE_K * pow(poly6WKernel(i.x_star - j.x_star, KERNEL_H) / poly6WKernel(V3D(TENSILE_DELTA_Q, 0.0, 0.0), KERNEL_H), TENSILE_N);
+}
+V3D ParticleSystem::computeViscosity(Particle i) {
+	V3D delta_v = V3D();
+
+	for (auto& j : i.neighbors) {
+		delta_v += (particles[j].v_i - i.v_i) * poly6WKernel(i.x_star - particles[j].x_star, KERNEL_H);
+	}
+
+	return VISCOSITY_C * delta_v;
+}
+
 
 // Code for drawing the particle system is below here.
 
@@ -203,7 +287,7 @@ void ParticleSystem::drawParticleSystem() {
 	// Copy particle positions into array
 	positionArray.clear();
 	pointsIndexArray.clear();
-	for (auto &p : particles) {
+	for (auto& p : particles) {
 		positionArray.push_back(p.x_i[0]);
 		positionArray.push_back(p.x_i[1]);
 		positionArray.push_back(p.x_i[2]);

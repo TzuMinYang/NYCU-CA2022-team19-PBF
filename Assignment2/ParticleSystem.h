@@ -30,9 +30,9 @@ private:
 	vector<unsigned int> edgesIndexArray;
 	vector<double> zlSpringPositionArray;
 	int count;
-	
+
 	unsigned int boxList;
-	
+
 public:
 	ParticleSystem(vector<ParticleInit>& particles);
 	~ParticleSystem();
@@ -50,4 +50,17 @@ public:
 	// Whether or not we should draw springs and particles as lines and dots respectively.
 	static bool drawParticles;
 	static bool enableGravity;
+
+	// functions added by a
+	double computeDensity(int i);
+	double computeLambda(int i);
+	V3D computeDeltaP(Particle i);
+
+	// additional parameters
+	double computeSurfaceTension(Particle i, Particle j);
+	V3D computeViscosity(Particle i);
+
+	double poly6WKernel(V3D r, double h);
+	V3D spikyWKernel(V3D r, double h);
+
 };
