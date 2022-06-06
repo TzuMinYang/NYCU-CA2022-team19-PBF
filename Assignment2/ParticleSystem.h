@@ -61,6 +61,6 @@ public:
 	V3D computeViscosity(Particle i);
 
 	double poly6WKernel(V3D r, double h);
-	V3D spikyWKernel(V3D r, double h);
+	V3D spikyWKernel(V3D r, double h, bool dir);
 
 };

@@ -1,7 +1,7 @@
 #pragma once
 
-#define DELTA_T 0.016
-#define SOLVER_ITERATIONS 5
+#define DELTA_T 0.016 //0.016
+#define SOLVER_ITERATIONS 5 //5
 
 #define KERNEL_H 0.25
 #define REST_DENSITY 450000

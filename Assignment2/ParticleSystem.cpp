@@ -132,9 +132,12 @@ void ParticleSystem::integrate_PBF(double delta) {
 		// calculate delta position
 		for (auto& p : particles) {
 			p.delta_p = computeDeltaP(p);
+		}
+
+		for (auto& p : particles) {
 			// collision detection
-			for (auto& cp : planes)
-				p.x_star = cp.handleCollision(p.x_star);
+			//for (auto& cp : planes)
+			//	p.x_star = cp.handleCollision(p.x_star);
 		}
 
 		// update position
@@ -173,12 +176,12 @@ double ParticleSystem::poly6WKernel(V3D r, double h) {
 	return 315.0 / (64.0 * PI * pow(h, 9)) * pow(pow(h, 2) - r.length2(), 3);
 }
 
-V3D ParticleSystem::spikyWKernel(V3D r, double h) {
+V3D ParticleSystem::spikyWKernel(V3D r, double h, bool dir) {
 	if (r.length() > h) {
 		return V3D();
 	}
-
-	return -45.0 / (PI * pow(h, 6)) * pow(h - r.length(), 2) * r / r.length();
+	V3D direction = dir ? r.unit() : -r.unit();
+	return -45.0 / (PI * pow(h, 6)) * pow(h - r.length(), 2) * direction;
 }
 
 double  ParticleSystem::computeLambda(int i) {
@@ -189,11 +192,11 @@ double  ParticleSystem::computeLambda(int i) {
 		V3D constraintGradient = V3D();
 		if (k == i) {
 			for (auto& j : particles[i].neighbors) {
-				constraintGradient += spikyWKernel(particles[i].x_star - particles[j].x_star, KERNEL_H);
+				constraintGradient += spikyWKernel(particles[i].x_star - particles[j].x_star, KERNEL_H, false);
 			}
 		}
 		else {
-			constraintGradient = -spikyWKernel(particles[i].x_star - particles[k].x_star, KERNEL_H);
+			constraintGradient = -spikyWKernel(particles[i].x_star - particles[k].x_star, KERNEL_H, true);
 		}
 		constraintGradient /= REST_DENSITY;
 		constraintGradientSum += constraintGradient.length2();
@@ -205,7 +208,7 @@ double  ParticleSystem::computeLambda(int i) {
 V3D ParticleSystem::computeDeltaP(Particle i) {
 	V3D deltaP = V3D();
 	for (auto& j : i.neighbors) {
-		deltaP += (spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H) * (i.lambda_i + particles[j].lambda_i + computeSurfaceTension(i, particles[j])));
+		deltaP += (spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H, false) * (i.lambda_i + particles[j].lambda_i + computeSurfaceTension(i, particles[j])));
 	}
 	deltaP /= REST_DENSITY;
 	return deltaP;
