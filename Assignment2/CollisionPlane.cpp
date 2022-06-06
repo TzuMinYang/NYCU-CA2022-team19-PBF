@@ -17,7 +17,7 @@ P3D CollisionPlane::handleCollision(P3D point)
 	// add by s
 	float distance = (point - this->pointOnPlane).dot(this->normal);
 	if (distance < KERNEL_H)
-		point -= this->normal * distance; // not sure: 要不要加回KERNEL_H?
+		point -= this->normal * (distance - KERNEL_H); // not sure: 要不要加回KERNEL_H?
 
 	return point;
 	// end of add
