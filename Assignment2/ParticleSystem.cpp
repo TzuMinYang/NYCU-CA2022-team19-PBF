@@ -132,14 +132,14 @@ void ParticleSystem::integrate_PBF(double delta) {
 		// calculate delta position
 		for (auto& p : particles) {
 			p.delta_p = computeDeltaP(p);
-			// collision detection
-			for (auto& cp : planes)
-				p.x_star = cp.handleCollision(p.x_star);
 		}
 
 		// update position
 		for (auto& p : particles) {
 			p.x_star += p.delta_p;
+			// collision detection
+			for (auto& cp : planes)
+				p.x_star = cp.handleCollision(p.x_star);
 		}
 		iteration++;
 	}
@@ -148,6 +148,8 @@ void ParticleSystem::integrate_PBF(double delta) {
 		// TODO: edit this loop to apply vorticity and viscosity.
 		p.v_i = (p.x_star - p.x_i) / delta;
 
+		// apply vorticity
+		p.v_i += (computeVorticity(p) * delta);
 		// apply viscosity
 		p.v_i += computeViscosity(p);
 		p.x_i = p.x_star;
@@ -165,22 +167,7 @@ double ParticleSystem::computeDensity(int i) {
 	return density;
 }
 
-double ParticleSystem::poly6WKernel(V3D r, double h) {
-
-	if (r.length() > h) {
-		return 0.0;
-	}
-	return 315.0 / (64.0 * PI * pow(h, 9)) * pow(pow(h, 2) - r.length2(), 3);
-}
-
-V3D ParticleSystem::spikyWKernel(V3D r, double h, bool dir) {
-	if (r.length() > h) {
-		return V3D();
-	}
-	V3D direction = dir ? r.unit() : -r.unit();
-	return -45.0 / (PI * pow(h, 6)) * pow(h - r.length(), 2) * direction;
-}
-
+// functions added by a
 double  ParticleSystem::computeLambda(int i) {
 	double constraint = (particles[i].density / REST_DENSITY) - 1.0;
 	double constraintGradientSum = 0.0;
@@ -202,6 +189,7 @@ double  ParticleSystem::computeLambda(int i) {
 	return -constraint / (constraintGradientSum + CFM_EPSILON);
 }
 
+// functions added by a
 V3D ParticleSystem::computeDeltaP(Particle i) {
 	V3D deltaP = V3D();
 	for (auto& j : i.neighbors) {
@@ -209,6 +197,36 @@ V3D ParticleSystem::computeDeltaP(Particle i) {
 	}
 	deltaP /= REST_DENSITY;
 	return deltaP;
+}
+
+// functions added by s
+V3D ParticleSystem::computeVorticity(Particle i) {
+	i.vorticity_W = V3D();
+	for (auto &j : i.neighbors) {
+		i.vorticity_W += (particles[j].v_i - i.v_i).cross(spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H, true));
+	}
+
+	// not sure: how to get vorticity_N ?
+	V3D mass_center = (i.x_i + i.x_star) / 2;
+	i.vorticity_N = (mass_center - i.x_star) / (mass_center - i.x_star).norm();
+
+	return VORTICITY_EPSILON * (i.vorticity_N.cross(i.vorticity_W));
+}
+
+double ParticleSystem::poly6WKernel(V3D r, double h) {
+
+	if (r.length() > h) {
+		return 0.0;
+	}
+	return 315.0 / (64.0 * PI * pow(h, 9)) * pow(pow(h, 2) - r.length2(), 3);
+}
+
+V3D ParticleSystem::spikyWKernel(V3D r, double h, bool dir) {
+	if (r.length() > h) {
+		return V3D();
+	}
+	V3D direction = dir ? r.unit() : -r.unit();
+	return -45.0 / (PI * pow(h, 6)) * pow(h - r.length(), 2) * direction;
 }
 
 double ParticleSystem::computeSurfaceTension(Particle i, Particle j) {
