@@ -13,7 +13,7 @@ MassSpringApp::MassSpringApp() {
 	showDesignEnvironmentBox = true;
 	showReflections = false;
 
-	particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");
+	particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny670.obj");
 
 	pickedParticle = -1;
 }

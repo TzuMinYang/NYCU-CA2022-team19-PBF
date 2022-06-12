@@ -2,6 +2,7 @@
 
 #include "MathLib/P3D.h"
 #include "MathLib/V3D.h"
+#include "Particle.h" //
 
 class CollisionPlane {
 private:
@@ -10,4 +11,6 @@ private:
 public:
 	CollisionPlane(P3D p, V3D n);
 	P3D handleCollision(P3D point);
+	Particle handleCollision_particle(Particle i);
+
 };

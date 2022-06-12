@@ -139,7 +139,8 @@ void ParticleSystem::integrate_PBF(double delta) {
 			p.x_star += p.delta_p;
 			// collision detection
 			for (auto& cp : planes)
-				p.x_star = cp.handleCollision(p.x_star);
+				p = cp.handleCollision_particle(p);
+				//p.x_star = cp.handleCollision(p.x_star);
 		}
 		iteration++;
 	}
