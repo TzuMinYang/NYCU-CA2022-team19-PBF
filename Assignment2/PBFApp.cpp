@@ -215,4 +215,3 @@ bool MassSpringApp::processCommandLine(const std::string& cmdLine) {
 
 	return false;
 }
-

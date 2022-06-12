@@ -56,14 +56,12 @@ public:
 	double computeLambda(int i);
 	V3D computeDeltaP(Particle i);
 
-	// functions added by s
-	V3D computeVorticity(Particle i);
-
-	// additional parameters
 	double computeSurfaceTension(Particle i, Particle j);
 	V3D computeViscosity(Particle i);
 
 	double poly6WKernel(V3D r, double h);
 	V3D spikyWKernel(V3D r, double h, bool dir);
 
+	// functions added by s
+	V3D computeVorticity(Particle i);
 };

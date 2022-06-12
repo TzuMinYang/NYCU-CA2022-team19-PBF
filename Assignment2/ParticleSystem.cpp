@@ -13,7 +13,11 @@
 #include "Constants.h"
 #include <math.h>
 
+#include<iostream>
+using namespace std;
+
 GLuint makeBoxDisplayList();
+
 
 ParticleSystem::ParticleSystem(vector<ParticleInit>& initialParticles)
 	: particleMap(KERNEL_H)
@@ -34,7 +38,7 @@ ParticleSystem::ParticleSystem(vector<ParticleInit>& initialParticles)
 	}
 
 	// Create floor and walls
-	CollisionPlane floor(P3D(0, 0, 0), V3D(0, 1, 0));
+	CollisionPlane floor(P3D(0, -2, 0), V3D(0, 1, 0));
 	CollisionPlane left_wall(P3D(-1, 0, 0), V3D(1, 0, 0));
 	CollisionPlane right_wall(P3D(1, 0, 0), V3D(-1, 0, 0));
 	CollisionPlane front_wall(P3D(0, 0, -1), V3D(0, 0, 1));
@@ -120,27 +124,26 @@ void ParticleSystem::integrate_PBF(double delta) {
 	}
 
 	// TODO: implement the solver loop.
-
 	int iteration = 0;
 	while (iteration < SOLVER_ITERATIONS) {
-
 		// calculate lambda
 		for (int i = 0; i < particles.size(); i++) {
 			particles[i].density = computeDensity(i);
 			particles[i].lambda_i = computeLambda(i);
 		}
+
 		// calculate delta position
 		for (auto& p : particles) {
 			p.delta_p = computeDeltaP(p);
+			// collision detection
+			for (auto& cp : planes)
+				//p = cp.handleCollision_particle(p);
+				p.x_star = cp.handleCollision(p.x_star);
 		}
 
 		// update position
 		for (auto& p : particles) {
 			p.x_star += p.delta_p;
-			// collision detection
-			for (auto& cp : planes)
-				p = cp.handleCollision_particle(p);
-				//p.x_star = cp.handleCollision(p.x_star);
 		}
 		iteration++;
 	}
@@ -150,17 +153,16 @@ void ParticleSystem::integrate_PBF(double delta) {
 		p.v_i = (p.x_star - p.x_i) / delta;
 
 		// apply vorticity
-		p.v_i += (computeVorticity(p) * delta);
+		//p.v_i += (computeVorticity(p) * delta);
 		// apply viscosity
 		p.v_i += computeViscosity(p);
 		p.x_i = p.x_star;
 	}
 }
-
 // functions added by a
 double ParticleSystem::computeDensity(int i) {
 	double density = 0.0;
-	// neighbor or all?
+	// neighbor for optimization
 	for (auto& j : particles[i].neighbors) {
 		// mass = 1 -> ignore mass
 		density += poly6WKernel(particles[i].x_star - particles[j].x_star, KERNEL_H);
@@ -196,6 +198,7 @@ V3D ParticleSystem::computeDeltaP(Particle i) {
 	for (auto& j : i.neighbors) {
 		deltaP += (spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H, false) * (i.lambda_i + particles[j].lambda_i + computeSurfaceTension(i, particles[j])));
 	}
+
 	deltaP /= REST_DENSITY;
 	return deltaP;
 }
@@ -203,8 +206,8 @@ V3D ParticleSystem::computeDeltaP(Particle i) {
 // functions added by s
 V3D ParticleSystem::computeVorticity(Particle i) {
 	i.vorticity_W = V3D();
-	for (auto &j : i.neighbors) {
-		i.vorticity_W += (particles[j].v_i - i.v_i).cross(spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H, true));
+	for (auto& j : i.neighbors) {
+		i.vorticity_W += (particles[j].v_i - i.v_i).cross(spikyWKernel(i.x_star - particles[j].x_star, KERNEL_H, false));
 	}
 
 	// not sure: how to get vorticity_N ?
@@ -214,6 +217,7 @@ V3D ParticleSystem::computeVorticity(Particle i) {
 	return VORTICITY_EPSILON * (i.vorticity_N.cross(i.vorticity_W));
 }
 
+// functions added by a
 double ParticleSystem::poly6WKernel(V3D r, double h) {
 
 	if (r.length() > h) {
@@ -222,6 +226,7 @@ double ParticleSystem::poly6WKernel(V3D r, double h) {
 	return 315.0 / (64.0 * PI * pow(h, 9)) * pow(pow(h, 2) - r.length2(), 3);
 }
 
+// functions added by a
 V3D ParticleSystem::spikyWKernel(V3D r, double h, bool dir) {
 	if (r.length() > h) {
 		return V3D();
@@ -230,10 +235,13 @@ V3D ParticleSystem::spikyWKernel(V3D r, double h, bool dir) {
 	return -45.0 / (PI * pow(h, 6)) * pow(h - r.length(), 2) * direction;
 }
 
+// functions added by a
 double ParticleSystem::computeSurfaceTension(Particle i, Particle j) {
-
+	//return 0.0001;
 	return -TENSILE_K * pow(poly6WKernel(i.x_star - j.x_star, KERNEL_H) / poly6WKernel(V3D(TENSILE_DELTA_Q, 0.0, 0.0), KERNEL_H), TENSILE_N);
 }
+
+// functions added by a
 V3D ParticleSystem::computeViscosity(Particle i) {
 	V3D delta_v = V3D();
 
@@ -243,7 +251,6 @@ V3D ParticleSystem::computeViscosity(Particle i) {
 
 	return VISCOSITY_C * delta_v;
 }
-
 
 // Code for drawing the particle system is below here.
 
@@ -320,7 +327,7 @@ void ParticleSystem::drawParticleSystem() {
 		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
 
 		glColor4d(0.2, 0.2, 0.8, 1);
-		glPointSize(32);
+		glPointSize(15);
 		glDrawElements(GL_POINTS, numParticles, GL_UNSIGNED_INT, &(pointsIndexArray.front()));
 
 		glDisableClientState(GL_VERTEX_ARRAY);
