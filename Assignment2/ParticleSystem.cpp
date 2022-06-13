@@ -38,7 +38,7 @@ ParticleSystem::ParticleSystem(vector<ParticleInit>& initialParticles)
 	}
 
 	// Create floor and walls
-	CollisionPlane floor(P3D(0, -2, 0), V3D(0, 1, 0));
+	CollisionPlane floor(P3D(0, -1, 0), V3D(0, 1, 0));
 	CollisionPlane left_wall(P3D(-1, 0, 0), V3D(1, 0, 0));
 	CollisionPlane right_wall(P3D(1, 0, 0), V3D(-1, 0, 0));
 	CollisionPlane front_wall(P3D(0, 0, -1), V3D(0, 0, 1));
@@ -153,7 +153,7 @@ void ParticleSystem::integrate_PBF(double delta) {
 		p.v_i = (p.x_star - p.x_i) / delta;
 
 		// apply vorticity
-		//p.v_i += (computeVorticity(p) * delta);
+		p.v_i += (computeVorticity(p) * delta);
 		// apply viscosity
 		p.v_i += computeViscosity(p);
 		p.x_i = p.x_star;
@@ -262,28 +262,28 @@ GLuint makeBoxDisplayList() {
 	glLineWidth(3);
 	glColor3d(0, 0, 0);
 	glBegin(GL_LINES);
-	glVertex3d(-1, 0, -1);
-	glVertex3d(-1, 0, 1);
+	glVertex3d(-1, -1, -1);
+	glVertex3d(-1, -1, 1);
 
-	glVertex3d(-1, 0, 1);
-	glVertex3d(1, 0, 1);
+	glVertex3d(-1, -1, 1);
+	glVertex3d(1, -1, 1);
 
-	glVertex3d(1, 0, 1);
-	glVertex3d(1, 0, -1);
+	glVertex3d(1, -1, 1);
+	glVertex3d(1, -1, -1);
 
-	glVertex3d(1, 0, -1);
-	glVertex3d(-1, 0, -1);
+	glVertex3d(1, -1, -1);
+	glVertex3d(-1, -1, -1);
 
-	glVertex3d(-1, 0, -1);
-	glVertex3d(-1, 2, -1);
+	glVertex3d(-1, -1, -1);
+	glVertex3d(-1, -1, -1);
 
-	glVertex3d(-1, 0, 1);
+	glVertex3d(-1, -1, 1);
 	glVertex3d(-1, 2, 1);
 
-	glVertex3d(1, 0, 1);
+	glVertex3d(1, -1, 1);
 	glVertex3d(1, 2, 1);
 
-	glVertex3d(1, 0, -1);
+	glVertex3d(1, -1, -1);
 	glVertex3d(1, 2, -1);
 
 	glVertex3d(-1, 2, -1);

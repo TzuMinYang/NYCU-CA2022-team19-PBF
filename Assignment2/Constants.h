@@ -5,7 +5,7 @@
 
 #define KERNEL_H 0.2 //0.25
 #define REST_DENSITY 5000000 //5000000//450000
-#define CFM_EPSILON 1 //0.1
+#define CFM_EPSILON 1 //0.1 //1
 #define DRAG_COEFF 1
 
 #define TENSILE_DELTA_Q 0.03
