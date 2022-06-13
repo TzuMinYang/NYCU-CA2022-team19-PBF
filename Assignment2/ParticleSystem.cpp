@@ -281,7 +281,7 @@ GLuint makeBoxDisplayList() {
 	glVertex3d(-1, -1, -1);
 
 	glVertex3d(-1, -1, -1);
-	glVertex3d(-1, , -1);
+	glVertex3d(-1, 2, -1);
 
 	glVertex3d(-1, -1, 1);
 	glVertex3d(-1, 2, 1);
