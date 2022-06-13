@@ -119,9 +119,15 @@ void ParticleSystem::integrate_PBF(double delta) {
 		particleMap.add(i, particles[i]);
 	}
 
+	// hash table
 	for (auto& p_i : particles) {
 		particleMap.findNeighbors(p_i, particles);
 	}
+
+	// brute_force_findNeighbors
+	/*for (int i = 0; i < particles.size(); ++i) {
+		particleMap.brute_force_findNeighbors(particles[i], i, particles);
+	}*/
 
 	// TODO: implement the solver loop.
 	int iteration = 0;
@@ -220,7 +226,7 @@ V3D ParticleSystem::computeVorticity(Particle i) {
 // functions added by a
 double ParticleSystem::poly6WKernel(V3D r, double h) {
 
-	if (r.length() > h) {
+	if (r.length() > h || r.length() < 0) {
 		return 0.0;
 	}
 	return 315.0 / (64.0 * PI * pow(h, 9)) * pow(pow(h, 2) - r.length2(), 3);
@@ -228,7 +234,7 @@ double ParticleSystem::poly6WKernel(V3D r, double h) {
 
 // functions added by a
 V3D ParticleSystem::spikyWKernel(V3D r, double h, bool dir) {
-	if (r.length() > h) {
+	if (r.length() > h || r.length() < 0) {
 		return V3D();
 	}
 	V3D direction = dir ? r.unit() : -r.unit();

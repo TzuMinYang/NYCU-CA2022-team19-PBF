@@ -64,7 +64,7 @@ void SpatialMap::findNeighbors(Particle &p_i, vector<Particle> &particles) {
 	}
 }
 
-void brute_force_findNeighbors(Particle &p_i, int index, std::vector<Particle> &particles) // add by s
+void SpatialMap::brute_force_findNeighbors(Particle &p_i, int index, std::vector<Particle> &particles) // add by s
 {
 	p_i.neighbors.clear();
 	for (int j = 0; j < particles.size(); ++j)

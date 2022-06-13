@@ -11,6 +11,5 @@ private:
 public:
 	CollisionPlane(P3D p, V3D n);
 	P3D handleCollision(P3D point);
-	Particle handleCollision_particle(Particle i);
-
+	//Particle handleCollision_particle(Particle i); add by s
 };

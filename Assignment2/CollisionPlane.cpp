@@ -23,8 +23,8 @@ P3D CollisionPlane::handleCollision(P3D point)
 	// end of add
 }
 
-
-Particle CollisionPlane::handleCollision_particle(Particle i)
+// add by s
+/*Particle CollisionPlane::handleCollision_particle(Particle i)
 {
 	// TODO: implement collision handling with planes.
 	// add by s
@@ -38,4 +38,4 @@ Particle CollisionPlane::handleCollision_particle(Particle i)
 
 	return i;
 	// end of add
-}
+}*/
